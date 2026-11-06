@@ -190,12 +190,7 @@ button { cursor: pointer; }
 }
 
 
-/* AI validation retry panel */
-.retry-answer-input{display:block;width:100%;margin-top:8px;padding:11px 12px;border:1px solid var(--line,#d8d8d8);border-radius:10px;background:rgba(255,255,255,.06);color:inherit;font:inherit;box-sizing:border-box}.retry-reason{display:block;margin-top:6px;color:#d99a35!important;line-height:1.4}.result-row{align-items:flex-start}
-
-/* Timed answer-correction window */
-.retry-timer{margin:18px 0 8px}
-.retry-timer .timer-track{margin-top:8px}
+.result-row{align-items:flex-start}
 .result-row>strong{max-width:130px;text-align:right}
 @media(max-width:560px){.result-row>strong{font-size:11px;max-width:96px}}
 
@@ -209,3 +204,31 @@ button { cursor: pointer; }
 .school-entry-form label small{letter-spacing:0;text-transform:none;font-weight:500;color:#8993a2}
 .school-empty{color:#9ca5b4;font-size:12px;padding:12px 0}
 @media(max-width:760px){.school-knowledge-panel .edit-panel-head{align-items:flex-start;flex-direction:column}.school-knowledge-panel .bank-row{gap:7px;padding:12px 10px}}
+
+/* Deterministic answer-bank administration */
+.answer-bank-panel .school-entry-form { margin-top: 18px; }
+.answer-bank-panel select,
+.answer-review-actions select {
+  width: 100%;
+  min-width: 190px;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 10px;
+  background: #21131a;
+  color: #fff;
+  padding: 12px 14px;
+  font: inherit;
+}
+.answer-review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  width: 100%;
+}
+.answer-review-actions select { flex: 1 1 220px; }
+.answer-review-actions .secondary-btn { min-height: 40px; }
+@media (max-width: 720px) {
+  .answer-review-actions { align-items: stretch; }
+  .answer-review-actions .secondary-btn { flex: 1 1 100%; }
+}
