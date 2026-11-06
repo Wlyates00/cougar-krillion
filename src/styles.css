@@ -192,3 +192,9 @@ button { cursor: pointer; }
 
 /* AI validation retry panel */
 .retry-answer-input{display:block;width:100%;margin-top:8px;padding:11px 12px;border:1px solid var(--line,#d8d8d8);border-radius:10px;background:rgba(255,255,255,.06);color:inherit;font:inherit;box-sizing:border-box}.retry-reason{display:block;margin-top:6px;color:#d99a35!important;line-height:1.4}.result-row{align-items:flex-start}
+
+/* Timed answer-correction window */
+.retry-timer{margin:18px 0 8px}
+.retry-timer .timer-track{margin-top:8px}
+.result-row>strong{max-width:130px;text-align:right}
+@media(max-width:560px){.result-row>strong{font-size:11px;max-width:96px}}
