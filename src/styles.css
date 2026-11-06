@@ -198,3 +198,14 @@ button { cursor: pointer; }
 .retry-timer .timer-track{margin-top:8px}
 .result-row>strong{max-width:130px;text-align:right}
 @media(max-width:560px){.result-row>strong{font-size:11px;max-width:96px}}
+
+/* Teacher-managed school knowledge */
+.school-knowledge-panel .panel-description{color:#9ca5b4;font-size:11px;line-height:1.6;max-width:620px;margin:7px 0 0}
+.school-knowledge-panel .edit-panel-head>span{color:#7f8998;font-size:9px;letter-spacing:.12em;font-weight:800;white-space:nowrap}
+.school-knowledge-list{border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:16px 0 22px}
+.school-entry-form{border-top:1px solid var(--line);padding-top:22px;margin-top:22px}
+.school-entry-form .edit-panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.school-entry-form label{margin-top:15px}
+.school-entry-form label small{letter-spacing:0;text-transform:none;font-weight:500;color:#8993a2}
+.school-empty{color:#9ca5b4;font-size:12px;padding:12px 0}
+@media(max-width:760px){.school-knowledge-panel .edit-panel-head{align-items:flex-start;flex-direction:column}.school-knowledge-panel .bank-row{gap:7px;padding:12px 10px}}
