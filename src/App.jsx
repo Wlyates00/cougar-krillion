@@ -60,7 +60,20 @@ export default function App(){
  async function saveSchoolEntry(){if(!schoolName.trim())return;setBusy(true);try{const payload={name:schoolName.trim(),category:schoolCategory,aliases:schoolAliases.split(',').map(x=>x.trim()).filter(Boolean),notes:schoolNotes.trim()||null,is_active:true};const result=editingSchoolId?await supabase.from('school_knowledge').update(payload).eq('id',editingSchoolId):await supabase.from('school_knowledge').insert(payload);if(result.error)throw result.error;resetSchoolForm();await loadSchoolEntries();setNotice('School knowledge saved. It can be matched on relevant school-specific questions.')}catch(e){setNotice(err(e))}finally{setBusy(false)}}
  async function deleteSchoolEntry(id){if(!window.confirm('Remove this item from Cougar Krillion school knowledge?'))return;setBusy(true);try{const {error}=await supabase.from('school_knowledge').delete().eq('id',id);if(error)throw error;setSchoolEntries(items=>items.filter(item=>item.id!==id));if(editingSchoolId===id)resetSchoolForm();setNotice('School knowledge item removed.')}catch(e){setNotice(err(e))}finally{setBusy(false)}}
  async function review(id,action,targetId=null){setBusy(true);try{const {error}=await supabase.rpc('teacher_resolve_answer',{p_answer_id:id,p_action:action,p_answer_bank_id:targetId||null});if(error)throw error;await loadQueue();await loadAnswerBank();await refreshBoard();setNotice(action==='reject'?'Answer rejected.':action==='alias'?'Answer added as an accepted variation.':'Answer approved and added as a new canonical answer.')}catch(e){setNotice(err(e))}finally{setBusy(false)}}
- async function loadAnswerBank(){const {data,error}=await supabase.from('question_answer_bank').select('id,question_id,canonical_answer,aliases,is_active').eq('is_active',true).order('canonical_answer');if(error){setNotice(`Answer bank could not load: ${err(error)}`);return}setAnswerBank(data||[]);if(!answerQuestionId&&questions[0]?.id)setAnswerQuestionId(questions[0].id)}
+ async function fetchAnswerBankRows(activeOnly=false){
+  const pageSize=500;let from=0;const all=[];
+  while(true){
+   let query=supabase.from('question_answer_bank').select('id,question_id,canonical_answer,aliases,is_active');
+   if(activeOnly)query=query.eq('is_active',true);
+   const {data,error}=await query.order('canonical_answer').order('id').range(from,from+pageSize-1);
+   if(error)throw error;
+   all.push(...(data||[]));
+   if(!data||data.length<pageSize)break;
+   from+=pageSize;
+  }
+  return all;
+ }
+ async function loadAnswerBank(){try{const data=await fetchAnswerBankRows(true);setAnswerBank(data);if(!answerQuestionId&&questions[0]?.id)setAnswerQuestionId(questions[0].id)}catch(e){setNotice(`Answer bank could not load: ${err(e)}`)}}
  function resetAnswerBankForm(){setEditingAnswerBankId(null);setAnswerCanonical('');setAnswerAliases('')}
  function editAnswerBankEntry(entry){setEditingAnswerBankId(entry.id);setAnswerQuestionId(entry.question_id);setAnswerCanonical(entry.canonical_answer);setAnswerAliases((entry.aliases||[]).join(', '))}
  async function saveAnswerBankEntry(){if(!answerQuestionId||!answerCanonical.trim())return;setBusy(true);try{const payload={question_id:answerQuestionId,canonical_answer:answerCanonical.trim(),aliases:answerAliases.split(',').map(x=>x.trim()).filter(Boolean),is_active:true,updated_at:new Date().toISOString()};const result=editingAnswerBankId?await supabase.from('question_answer_bank').update(payload).eq('id',editingAnswerBankId):await supabase.from('question_answer_bank').insert(payload);if(result.error)throw result.error;resetAnswerBankForm();await loadAnswerBank();setNotice('Canonical answer and accepted variations saved.')}catch(e){setNotice(err(e))}finally{setBusy(false)}}
@@ -71,9 +84,9 @@ export default function App(){
   try{
    const parsed=JSON.parse(await file.text())
    const groups=Array.isArray(parsed)?parsed:(Array.isArray(parsed.questions)?parsed.questions:[parsed])
-   const {data:currentRows,error:fetchError}=await supabase.from('question_answer_bank').select('id,question_id,canonical_answer,aliases,is_active').eq('is_active',true)
-   if(fetchError)throw fetchError
-   const rows=[...(currentRows||[])];let added=0,updated=0,skipped=0;const problems=[]
+   // Include inactive rows too: the database's canonical-answer unique index
+   // applies to inactive entries as well. Paginate to avoid Supabase's row cap.
+   const rows=await fetchAnswerBankRows(false);let added=0,updated=0,skipped=0;const problems=[]
    for(const group of groups){
     const questionKey=group.question||group.prompt||group.question_id
     const question=questions.find(q=>q.id===questionKey||normalizeAnswer(q.prompt)===normalizeAnswer(questionKey))
@@ -86,7 +99,8 @@ export default function App(){
      const existing=rows.find(r=>r.question_id===question.id&&normalizeAnswer(r.canonical_answer)===normalizeAnswer(canonical))
      if(existing){
       const merged=[...(existing.aliases||[]),...aliases].filter((v,i,a)=>a.findIndex(x=>normalizeAnswer(x)===normalizeAnswer(v))===i)
-      if(merged.length!==(existing.aliases||[]).length){const {error}=await supabase.from('question_answer_bank').update({aliases:merged,updated_at:new Date().toISOString()}).eq('id',existing.id);if(error)throw error;existing.aliases=merged;updated++}
+      const needsUpdate=merged.length!==(existing.aliases||[]).length||!existing.is_active
+      if(needsUpdate){const {error}=await supabase.from('question_answer_bank').update({aliases:merged,is_active:true,updated_at:new Date().toISOString()}).eq('id',existing.id);if(error)throw error;existing.aliases=merged;existing.is_active=true;updated++}
      }else{
       const payload={question_id:question.id,canonical_answer:String(canonical).trim(),aliases,is_active:true}
       const {data,error}=await supabase.from('question_answer_bank').insert(payload).select('id,question_id,canonical_answer,aliases,is_active').single()

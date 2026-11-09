@@ -1,2 +1,0 @@
-[functions.submit-daily-challenge]
-verify_jwt = true

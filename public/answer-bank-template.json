@@ -1,0 +1,36 @@
+{
+  "questions": [
+    {
+      "question": "Name something students do before leaving class.",
+      "answers": [
+        {
+          "canonical": "Pack up",
+          "aliases": [
+            "Packing up",
+            "Pack up backpack",
+            "Pack my things"
+          ]
+        },
+        {
+          "canonical": "Clean up",
+          "aliases": [
+            "Clean my desk",
+            "Pick up trash"
+          ]
+        }
+      ]
+    },
+    {
+      "question": "Name a teacher.",
+      "answers": [
+        {
+          "canonical": "Mrs. Example",
+          "aliases": [
+            "Ms. Example",
+            "Mrs Example"
+          ]
+        }
+      ]
+    }
+  ]
+}
