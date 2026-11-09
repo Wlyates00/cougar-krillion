@@ -306,3 +306,7 @@ button { cursor: pointer; }
 .match-exact { color: #75d6a0; }
 .match-fuzzy { color: #e6bd58; }
 .match-none { color: #f29b9b; }
+
+.answer-feedback { margin-top:11px; border-radius:8px; padding:11px 13px; font-size:12px; line-height:1.5; }
+.answer-feedback.suggestion { color:#f5d98d; background:#e7b94f14; border:1px solid #e7b94f55; }
+.answer-feedback.invalid { color:#ffb2aa; background:#ff756b12; border:1px solid #ff756b55; }
