@@ -28,6 +28,10 @@ function previewMatch(value, entries) {
  const inputTokens=normalized.split(' ').filter(Boolean)
  const meaningful=inputTokens.filter(token=>token.length>=3)
  if(!meaningful.length)return {status:'unmatched'}
+ // A direct canonical answer always wins, even if another entry accidentally
+ // lists the same text as an alias. Do not let ambiguity protection reject it.
+ const canonicalMatch=entries.find(entry=>normalizeAnswer(entry.canonical_answer)===normalized)
+ if(canonicalMatch)return {status:'exact',canonical:canonicalMatch.canonical_answer,distance:0}
  const matches=[]
  for(const entry of entries){
   const candidates=[entry.canonical_answer,...(entry.aliases||[])].filter(Boolean)
